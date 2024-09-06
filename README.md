@@ -3,6 +3,9 @@
 Benchmarking framework for generating high-dimensional synthetic drifted data and evaluating
 models.
 
+The corresponding open-access paper, [Edgar Wolf and Tobias Windisch (2024), A method to benchmark high-dimensional 
+process drift detection](https://arxiv.org/abs/2409.03669), describes the
+method in detail.
 
 To run the benchmarks, execute:
 
