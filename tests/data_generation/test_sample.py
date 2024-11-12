@@ -31,10 +31,18 @@ class TestSampleCurves(unittest.TestCase):
 
         def f(w, x):
             return w[0] * x ** 3 + w[1] * x ** 2 + w[2] * x + w[3]
+
         w0 = np.zeros(4)
         dataset = load_dataset_specification_from_yaml(input)
-        coefficients, curves = sample_curves(dataset["example"], w0=w0, f=f)
+        coefficients, latent_information, curves = sample_curves(dataset["example"], w0=w0, f=f)
         self.assertTupleEqual(coefficients.shape, (10, 4))
+        self.assertEqual(len(latent_information), 10)
+        self.assertTrue(all(len(l.x0) == 3 for l in latent_information))
+        self.assertTrue(all(len(l.y0) == 3 for l in latent_information))
+        self.assertTrue(all(len(l.x1) == 2 for l in latent_information))
+        self.assertTrue(all(len(l.y1) == 2 for l in latent_information))
+        self.assertTrue(all(len(l.x2) == 1 for l in latent_information))
+        self.assertTrue(all(len(l.y2) == 1 for l in latent_information))
         self.assertTupleEqual(curves.shape, (10, 10))
 
     def test_sample_curves_with_custom_scales(self):
@@ -62,13 +70,14 @@ class TestSampleCurves(unittest.TestCase):
 
         def f(w, x):
             return w[0] * x ** 3 + w[1] * x ** 2 + w[2] * x + w[3]
+
         w0 = np.zeros(4)
         dataset = load_dataset_specification_from_yaml(input)
-        coefficients, curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42)
+        coefficients, _, curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42)
         altered_dataset = copy.deepcopy(dataset)
         altered_dataset["example"]["x_scale"] = 0.02
         altered_dataset["example"]["y_scale"] = 1.0
-        altered_coefficients, altered_curves = sample_curves(altered_dataset["example"], w0=w0, f=f, random_state=42)
+        altered_coefficients, _, altered_curves = sample_curves(altered_dataset["example"], w0=w0, f=f, random_state=42)
         self.assertTupleEqual(coefficients.shape, altered_coefficients.shape)
         self.assertTupleEqual(curves.shape, altered_curves.shape)
         self.assertFalse(np.allclose(coefficients, altered_coefficients))
@@ -99,11 +108,12 @@ class TestSampleCurves(unittest.TestCase):
 
         def f(w, x):
             return w[0] * x ** 3 + w[1] * x ** 2 + w[2] * x + w[3]
+
         w0 = np.zeros(4)
         dataset = load_dataset_specification_from_yaml(input)
-        coefficients, curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42)
-        altered_coefficients, altered_curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42,
-                                                             measurement_scale=0.1)
+        coefficients, _, curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42)
+        altered_coefficients, _, altered_curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42,
+                                                                measurement_scale=0.1)
         self.assertTupleEqual(coefficients.shape, altered_coefficients.shape)
         self.assertTupleEqual(curves.shape, altered_curves.shape)
         self.assertTrue(np.allclose(coefficients, altered_coefficients))
@@ -134,10 +144,11 @@ class TestSampleCurves(unittest.TestCase):
 
         def f(w, x):
             return w[0] * x ** 3 + w[1] * x ** 2 + w[2] * x + w[3]
+
         w0 = np.zeros(4)
         dataset = load_dataset_specification_from_yaml(input)
-        coefficients, curves = sample_curves(dataset["example"], random_state=42, w0=w0, f=f, measurement_scale=0.)
-        altered_coefficients, altered_curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42)
+        coefficients, _, curves = sample_curves(dataset["example"], random_state=42, w0=w0, f=f, measurement_scale=0.)
+        altered_coefficients, _, altered_curves = sample_curves(dataset["example"], w0=w0, f=f, random_state=42)
         self.assertTupleEqual(coefficients.shape, altered_coefficients.shape)
         self.assertTupleEqual(curves.shape, altered_curves.shape)
         self.assertTrue(np.allclose(coefficients, altered_coefficients))
@@ -168,14 +179,14 @@ class TestSampleCurves(unittest.TestCase):
         """
         w0 = np.zeros(4)
         dataset = load_dataset_specification_from_yaml(input)
-        coefficients, curves = sample_curves(dataset["example"], w0=w0)
+        coefficients, _, curves = sample_curves(dataset["example"], w0=w0)
 
         def f(w, x):
             return w[0] * x ** 3 + w[1] * x ** 2 + w[2] * x + w[3]
 
         dataset_without_function = copy.deepcopy(dataset)
         del dataset_without_function["example"]["func"]
-        coefficients2, curves2 = sample_curves(dataset_without_function["example"], w0=w0, f=f)
+        coefficients2, _, curves2 = sample_curves(dataset_without_function["example"], w0=w0, f=f)
         self.assertTupleEqual(coefficients.shape, (10, 4))
         self.assertTupleEqual(curves.shape, (10, 10))
         self.assertTrue(np.allclose(coefficients, coefficients2))
@@ -206,11 +217,35 @@ class TestSampleCurves(unittest.TestCase):
                 m: 0.1
         """
         dataset = load_dataset_specification_from_yaml(input)
-        coefficients, curves = sample_curves(dataset["example"])
+        coefficients, _, curves = sample_curves(dataset["example"])
         dataset_without_function = copy.deepcopy(dataset)
         del dataset_without_function["example"]["w_init"]
-        coefficients2, curves2 = sample_curves(dataset_without_function["example"], w0=np.zeros(4))
+        coefficients2, _, curves2 = sample_curves(dataset_without_function["example"], w0=np.zeros(4))
         self.assertTupleEqual(coefficients.shape, (10, 4))
         self.assertTupleEqual(curves.shape, (10, 10))
         self.assertTrue(np.allclose(coefficients, coefficients2))
         self.assertTrue(np.allclose(curves, curves2))
+
+    def test_sample_curves_without_drifts(self):
+        input = """
+        example:
+          N: 10
+          dimensions: 10
+          latent_information:
+            !LatentInformation
+            y0: [0, 8, 64]
+            x0: [0, 2, 4]
+            y1: [3, 27]
+            x1: [1, 3]
+            y2: [12]
+            x2: [2]
+        """
+
+        def f(w, x):
+            return w[0] * x ** 3 + w[1] * x ** 2 + w[2] * x + w[3]
+
+        w0 = np.zeros(4)
+        dataset = load_dataset_specification_from_yaml(input)
+        coefficients, _, curves = sample_curves(dataset["example"], w0=w0, f=f)
+        self.assertTupleEqual(coefficients.shape, (10, 4))
+        self.assertTupleEqual(curves.shape, (10, 10))
