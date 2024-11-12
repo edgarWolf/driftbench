@@ -14,6 +14,6 @@ if __name__ == '__main__':
 
         for dataset_name, spec in data_spec.items():
             print(datetime.now(), dataset_name)
-            w, curves = sample_curves(spec, f=None, random_state=10)
+            w, _, curves = sample_curves(spec, f=None, random_state=10)
             np.save(f'{dataset_name}.npy', curves)
             print(datetime.now())

@@ -16,7 +16,7 @@ class Dataset:
         self.Y = transform_drift_segments_into_binary(drift_bounds, self.spec['N'])
 
     def _generate(self, random_state):
-        _, curves = sample_curves(
+        _, _, curves = sample_curves(
             dataset_specification=self.spec,
             f=self.f,
             w0=self.w0,
