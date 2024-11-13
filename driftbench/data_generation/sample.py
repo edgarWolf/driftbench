@@ -6,16 +6,17 @@ from driftbench.data_generation.data_generator import CurveGenerator
 
 def sample_curves(dataset_specification, f=None, w0=None, random_state=2024, measurement_scale=None, callback=None):
     dimensions = dataset_specification["dimensions"]
-    drifts = dataset_specification["drifts"]
+    drifts = dataset_specification.get("drifts")
     x_scale = dataset_specification.get("x_scale", 0.02)
     y_scale = dataset_specification.get("y_scale", 0.1)
     func = _get_func(dataset_specification, f)
     w_init = _get_w_init(dataset_specification, w0)
     rng = np.random.RandomState(random_state)
     latent_information = _generate_latent_information(dataset_specification, rng, x_scale, y_scale)
-    latent_information_drifted = drifts.apply(latent_information)
+    if drifts is not None:
+        latent_information = drifts.apply(latent_information)
     data_generator = CurveGenerator(func, w_init)
-    w = data_generator.run(latent_information_drifted, callback=callback)
+    w = data_generator.run(latent_information, callback=callback)
     x_min = int(np.min(dataset_specification["latent_information"].x0))
     x_max = int(np.max(dataset_specification["latent_information"].x0))
     xs = np.linspace(x_min, x_max, dimensions)
@@ -26,7 +27,7 @@ def sample_curves(dataset_specification, f=None, w0=None, random_state=2024, mea
         curves = rng.normal(loc=curves, scale=scale)
     else:
         curves = rng.normal(loc=curves, scale=measurement_scale)
-    return w, curves
+    return w, latent_information, curves
 
 
 def _generate_latent_information(dataset_specification, rng, x_scale, y_scale):
