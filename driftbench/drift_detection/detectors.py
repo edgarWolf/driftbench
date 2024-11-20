@@ -115,6 +115,14 @@ class SlidingKSWINDetector(Detector):
 
 
 class MMDDetector(Detector):
+    """
+    Implementation of MMD algorithm as drift detector based on the Maximum Mean Discrepancy as defined in
+    Arthur Gretton, Karsten M Borgwardt, Malte J Rasch, Bernhard Schölkopf, and Alexander Smola.
+    A kernel two-sample test.
+    Journal of Machine Learning Research, 13(Mar):723–773, 2012.
+    This implementation is based on the blog post of Onur Tunali in
+    https://www.onurtunali.com/ml/2019/03/08/maximum-mean-discrepancy-in-machine-learning.html
+    """
     _device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
     def __init__(self, window_size, stat_size, offset, kernel="multiscale"):
