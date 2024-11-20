@@ -159,13 +159,14 @@ class MMDDetector(Detector):
     def predict(self, X):
         N = X.shape[0]
         prediction = np.full(N, np.nan)
-        stat_batches = np.array([X[i:i + self.stat_size] for i in range(N - self.stat_size + 1)])
-        data_batches = np.array([X[i:i + self.window_size] for i in range(self.offset, N - self.window_size + 1)])
-        num_batches = np.min([stat_batches.shape[0], data_batches.shape[0]])
         # Store last calculated score for the data batch containing not enough data.
         last_score = 1.
-        for i in range(num_batches):
-            stat_batch, data_batch = stat_batches[i], data_batches[i]
+        for i in range(N - self.stat_size + 1):
+            # Break if data window doesn't have enough data for next window anymore
+            if i + self.offset + self.window_size > N:
+                break
+            stat_batch = X[i:i + self.stat_size]
+            data_batch = X[i + self.offset :i + self.offset + self.window_size]
             score = self._mmd_score(stat_batch, data_batch, kernel=self.kernel)
             prediction[i + self.window_size - 1] = score.detach().cpu().item()
             last_score = score
