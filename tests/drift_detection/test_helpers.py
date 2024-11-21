@@ -1,3 +1,4 @@
+import numpy as np
 import unittest
 from driftbench.drift_detection.helpers import (
     find_drift_segments,
@@ -11,19 +12,31 @@ from driftbench.drift_detection.helpers import (
 
 class TestFindDriftSegments(unittest.TestCase):
     def test_no_drift_segment(self):
-        prediction = [0, 0, 0, 0]
+        prediction = np.array([0, 0, 0, 0])
         expected = []
         actual = find_drift_segments(prediction)
         self.assertEqual(expected, actual)
 
     def test_one_drift_segment(self):
-        prediction = [0, 0, 1, 1]
+        prediction = np.array([0, 0, 1, 1])
         expected = [(2, 3)]
         actual = find_drift_segments(prediction)
         self.assertEqual(expected, actual)
 
+    def test_multiple_drift_segments_and_one_at_end(self):
+        prediction = np.array([0, 0, 1, 1, 0, 1, 1, 1, 1])
+        expected = [(2, 3), (5, 8)]
+        actual = find_drift_segments(prediction)
+        self.assertEqual(expected, actual)
+
+    def test_drift_at_beginning(self):
+        prediction = np.array([1, 1, 1, 0, 0, 1, 1, 0, 0])
+        expected = [(0, 2), (5, 6)]
+        actual = find_drift_segments(prediction)
+        self.assertEqual(expected, actual)
+
     def test_multitple_drift_segments(self):
-        prediction = [0, 0, 1, 1, 0, 1, 1, 1, 0]
+        prediction = np.array([0, 0, 1, 1, 0, 1, 1, 1, 0])
         expected = [(2, 3), (5, 7)]
         actual = find_drift_segments(prediction)
         self.assertEqual(expected, actual)

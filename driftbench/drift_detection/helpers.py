@@ -2,24 +2,21 @@ import numpy as np
 
 
 def find_drift_segments(prediction):
-    drift_segments = []
-    start = None
-    for i, value in enumerate(prediction):
-        # Found drift index
-        if value == 1:
-            # New drift started
-            if start is None:
-                start = i
-        # End of drift in previous index, as now values is 0
-        elif start is not None:
-            drift_segments.append((start, i - 1))
-            start = None
-
-    # Last segment, if drift is until the end of the prediction.
-    if start is not None:
-        drift_segments.append((start, len(prediction) - 1))
-
-    return drift_segments
+    # Handle case when no timestamp indicates drift
+    if np.all(prediction == 0):
+        return []
+    # Handle case when every timestep indicates drift
+    if np.all(prediction == 1):
+        return [(0, prediction.shape[0] - 1)]
+    diff = np.diff(prediction)
+    starts, ends = np.where(diff == 1)[0] + 1, np.where(diff == -1)[0]
+    # Handle case when drift is until end of prediction
+    if starts.shape[0] > ends.shape[0]:
+        return [(start, end) for start, end in zip(starts, ends)] + [(starts[-1], prediction.shape[0] - 1)]
+    # Handle case when drift is right at the beginning of the prediction
+    if starts.shape[0] < ends.shape[0]:
+        return [(0, ends[0])] + [(start, end) for start, end in zip(starts, ends[1:])]
+    return [(start, end) for start, end in zip(starts, ends)]
 
 
 def transform_drift_segments_into_binary(drift_segments, input_len):
