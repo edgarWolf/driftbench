@@ -19,7 +19,6 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 class Detector(metaclass=ABCMeta):
-
     hparams = []
 
     @abstractmethod
@@ -59,7 +58,6 @@ class AlwaysGuessDriftDetector(Detector):
 
 
 class RollingMeanDifferenceDetector(Detector):
-
     hparams = ['window_size', 'center', 'fillna_strategy']
 
     def __init__(self, window_size, center=False, fillna_strategy=None):
@@ -113,6 +111,74 @@ class SlidingKSWINDetector(Detector):
             prediction[i + self.window_size - 1] = score
             last_score = score
         prediction[:self.window_size] = last_score
+        return prediction
+
+
+class MMDDetector(Detector):
+    """
+    Implementation of MMD algorithm as drift detector based on the Maximum Mean Discrepancy as defined in
+    Arthur Gretton, Karsten M Borgwardt, Malte J Rasch, Bernhard Schölkopf, and Alexander Smola.
+    A kernel two-sample test.
+    Journal of Machine Learning Research, 13(Mar):723–773, 2012.
+    This implementation is based on the blog post of Onur Tunali in
+    https://www.onurtunali.com/ml/2019/03/08/maximum-mean-discrepancy-in-machine-learning.html
+    """
+    _device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+    def __init__(self, window_size, stat_size, offset, kernel="multiscale"):
+        self.window_size = window_size
+        self.stat_size = stat_size
+        self.offset = offset
+        self.kernel = kernel
+
+    def _mmd_score(self, P, Q, kernel):
+        P = torch.from_numpy(P)
+        Q = torch.from_numpy(Q)
+        xx, yy, zz = torch.mm(P, P.t()), torch.mm(Q, Q.t()), torch.mm(P, Q.t())
+        rx = (xx.diag().unsqueeze(0).expand_as(xx))
+        ry = (yy.diag().unsqueeze(0).expand_as(yy))
+
+        dxx = rx.t() + rx - 2. * xx  # Used for A in (1)
+        dyy = ry.t() + ry - 2. * yy  # Used for B in (1)
+        dxy = rx.t() + ry - 2. * zz  # Used for C in (1)
+
+        XX, YY, XY = (torch.zeros(xx.shape).to(self._device),
+                      torch.zeros(xx.shape).to(self._device),
+                      torch.zeros(xx.shape).to(self._device))
+
+        if kernel == "multiscale":
+
+            bandwidth_range = [0.2, 0.5, 0.9, 1.3]
+            for a in bandwidth_range:
+                XX += a ** 2 * (a ** 2 + dxx) ** -1
+                YY += a ** 2 * (a ** 2 + dyy) ** -1
+                XY += a ** 2 * (a ** 2 + dxy) ** -1
+
+        if kernel == "rbf":
+
+            bandwidth_range = [10, 15, 20, 50]
+            for a in bandwidth_range:
+                XX += torch.exp(-0.5 * dxx / a)
+                YY += torch.exp(-0.5 * dyy / a)
+                XY += torch.exp(-0.5 * dxy / a)
+                
+        return torch.mean(XX + YY - 2. * XY)
+
+    def predict(self, X):
+        N = X.shape[0]
+        prediction = np.full(N, np.nan)
+        # Store last calculated score for the data batch containing not enough data.
+        last_score = 1.
+        for i in range(N - self.stat_size + 1):
+            # Break if data window doesn't have enough data for next window anymore
+            if i + self.offset + self.window_size > N:
+                break
+            stat_batch = X[i:i + self.stat_size]
+            data_batch = X[i + self.offset :i + self.offset + self.window_size]
+            score = self._mmd_score(stat_batch, data_batch, kernel=self.kernel)
+            prediction[i + self.window_size - 1] = score.detach().cpu().item()
+            last_score = score
+        prediction = np.nan_to_num(prediction, nan=last_score)
         return prediction
 
 

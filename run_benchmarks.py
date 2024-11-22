@@ -1,6 +1,6 @@
 import os
-default_n_threads = 20
-os.environ['OPENBLAS_NUM_THREADS'] = f"{default_n_threads}"
+default_n_threads = 20  # noqa
+os.environ['OPENBLAS_NUM_THREADS'] = f"{default_n_threads}"  # noqa
 os.environ['MKL_NUM_THREADS'] = f"{default_n_threads}"
 os.environ['OMP_NUM_THREADS'] = f"{default_n_threads}"
 
@@ -18,6 +18,7 @@ from driftbench.drift_detection.detectors import (
     SlidingKSWINDetector,
     ClusterDetector,
     AutoencoderDetector,
+    MMDDetector,
 )
 
 from driftbench.drift_detection.metrics import (
@@ -70,6 +71,14 @@ detectors = [
             agg_feature_func=np.mean,
             algorithm=SlidingKSWINDetector(window_size=20, stat_size=20, offset=10),
         ),
+        num_epochs=10,
+        batch_size=200,
+        lr=0.0001,
+    ),
+    AutoencoderDetector(
+        hidden_layers=[80, 20, 4],
+        retrain_always=True,
+        detector=MMDDetector(window_size=20, stat_size=20, offset=10),
         num_epochs=10,
         batch_size=200,
         lr=0.0001,
