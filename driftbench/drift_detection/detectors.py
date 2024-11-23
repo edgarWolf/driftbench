@@ -132,8 +132,8 @@ class MMDDetector(Detector):
         self.kernel = kernel
 
     def _mmd_score(self, P, Q, kernel):
-        P = torch.from_numpy(P)
-        Q = torch.from_numpy(Q)
+        P = torch.from_numpy(P).to(self._device)
+        Q = torch.from_numpy(Q).to(self._device)
         xx, yy, zz = torch.mm(P, P.t()), torch.mm(Q, Q.t()), torch.mm(P, Q.t())
         rx = (xx.diag().unsqueeze(0).expand_as(xx))
         ry = (yy.diag().unsqueeze(0).expand_as(yy))
@@ -161,7 +161,7 @@ class MMDDetector(Detector):
                 XX += torch.exp(-0.5 * dxx / a)
                 YY += torch.exp(-0.5 * dyy / a)
                 XY += torch.exp(-0.5 * dxy / a)
-                
+
         return torch.mean(XX + YY - 2. * XY)
 
     def predict(self, X):
