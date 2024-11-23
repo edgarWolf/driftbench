@@ -178,7 +178,7 @@ class MMDDetector(Detector):
             score = self._mmd_score(stat_batch, data_batch, kernel=self.kernel)
             prediction[i + self.window_size - 1] = score.detach().cpu().item()
             last_score = score
-        prediction = np.nan_to_num(prediction, nan=last_score)
+        prediction = np.nan_to_num(prediction, nan=last_score.detach().cpu().item())
         return prediction
 
 
