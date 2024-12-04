@@ -3,6 +3,42 @@ dataset_1:
   dimensions: 100
   x_scale: 0.02 
   y_scale: 0.02
+  func: w[0]*x*jax.numpy.sin(x*np.pi-np.pi/2-w[2])+w[3]*x
+  w_init: np.array([1.0, 1.0, 0.0, 1.0]) 
+  latent_information:
+    !LatentInformation
+    x0: [0, 1, 2, 3, 4, 5]
+    y0: [0, 2, 0, 6, 0, 10]
+    x1: [1, 2, 3, 4]     
+    y1: [0, 0, 0, 0]    
+    x2: [2, 4]
+    y2: [22.880, 42.62]   # 2*pi^2, 4*pi^2
+  drifts:
+    !DriftSequence
+      # Drifting of global maxima
+      - !LinearDrift
+        start: 3000
+        end: 3100
+        feature: x0 
+        dimension: 2
+        m: 0.002
+      - !LinearDrift
+        start: 3000
+        end: 3100
+        feature: x1 
+        dimension: 2
+        m: 0.002
+      - !LinearDrift
+        start: 3000
+        end: 3100
+        feature: x2 
+        dimension: 0
+        m: 0.002
+dataset_2:
+  N: 10000
+  dimensions: 100
+  x_scale: 0.02 
+  y_scale: 0.02
   func: w[7]* x**7 + w[6]* x**6 + w[5]* x**5 +w[4]* x**4 + w[3] * x**3 + w[2] * x**2 + w[1] * x + w[0]
   w_init: np.zeros(8)
   latent_information:
@@ -41,7 +77,7 @@ dataset_1:
         feature: y1
         dimension: 0
         m: 0.005
-dataset_2:
+dataset_3:
   N: 30000
   dimensions: 400
   x_scale: 0.02 
@@ -103,39 +139,3 @@ dataset_2:
         feature: x1     
         dimension: 1    
         m: 0.001
-dataset_3:
-  N: 10000
-  dimensions: 100
-  x_scale: 0.02 
-  y_scale: 0.02
-  func: w[0]*x*jax.numpy.sin(x*np.pi-np.pi/2-w[2])+w[3]*x
-  w_init: np.array([1.0, 1.0, 0.0, 1.0]) 
-  latent_information:
-    !LatentInformation
-    x0: [0, 1, 2, 3, 4, 5]
-    y0: [0, 2, 0, 6, 0, 10]
-    x1: [1, 2, 3, 4]     
-    y1: [0, 0, 0, 0]    
-    x2: [2, 4]
-    y2: [22.880, 42.62]   # 2*pi^2, 4*pi^2
-  drifts:
-    !DriftSequence
-      # Drifting of global maxima
-      - !LinearDrift
-        start: 3000
-        end: 3100
-        feature: x0 
-        dimension: 2
-        m: 0.002
-      - !LinearDrift
-        start: 3000
-        end: 3100
-        feature: x1 
-        dimension: 2
-        m: 0.002
-      - !LinearDrift
-        start: 3000
-        end: 3100
-        feature: x2 
-        dimension: 0
-        m: 0.002
