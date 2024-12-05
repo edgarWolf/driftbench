@@ -1,12 +1,14 @@
 from setuptools import setup
 
+with open('VERSION') as f:
+    version = f.read().strip()
+
 setup(
     name='driftbench',
-    version='1.0',
-    packages=['driftbench', 'driftbench.data_generation'],
+    version=version,
+    packages=['driftbench'],
     url='',
-    license='',
     author='Edgar Wolf',
     author_email='edgar.wolf@hs-kempten.de',
-    description=''
+    description='A package to benchmark process drift detection'
 )
