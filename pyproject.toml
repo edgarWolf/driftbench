@@ -13,7 +13,7 @@ maintainers = [
     { name = 'Edgar Wolf', email = 'edgar.wolf@hs-kempten.de' },
 ]
 description = 'Python tool to analyse process drifts'
-dynamic = ['version', 'readme']
+dynamic = ['version']
 readme = "README.md"
 dependencies = [
    "jaxlib",
@@ -39,7 +39,6 @@ include = ['driftbench*']
 
 [tool.setuptools.dynamic]
 version = { file = 'VERSION' }
-readme = { file = 'README' }
 
 
 [tool.ruff]
