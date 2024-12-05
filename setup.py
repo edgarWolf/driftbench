@@ -10,5 +10,7 @@ setup(
     url='',
     author='Edgar Wolf',
     author_email='edgar.wolf@hs-kempten.de',
-    description='A package to benchmark process drift detection'
+    description='A package to benchmark process drift detection',
+    long_description='A package to benchmark process drift detection',
+    long_description_content_type='text/markdown',
 )
