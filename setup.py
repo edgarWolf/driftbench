@@ -8,7 +8,6 @@ setup(
     version=version,
     packages=['driftbench'],
     url='',
-    license="Apache-2.0",
     author='Edgar Wolf',
     author_email='edgar.wolf@hs-kempten.de',
     description='A package to benchmark process drift detection'
