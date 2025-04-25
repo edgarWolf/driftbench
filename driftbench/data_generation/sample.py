@@ -49,29 +49,20 @@ def _generate_latent_information(dataset_specification, rng, x_scale, y_scale):
     N = dataset_specification["N"]
     base_latent_information = dataset_specification["latent_information"]
     latent_information = []
+    xis = [f"x{i}" for i in range(3)]
+    yis = [f"y{i}" for i in range(3)]
     for i in range(N):
         # Apply some random noise on the base values
-        x0 = base_latent_information.x0 + rng.normal(
-            size=len(base_latent_information.x0), scale=x_scale
-        )
-        y0 = base_latent_information.y0 + rng.normal(
-            size=len(base_latent_information.y0), scale=y_scale
-        )
-
-        x1 = base_latent_information.x1 + rng.normal(
-            size=len(base_latent_information.x1), scale=x_scale
-        )
-        y1 = base_latent_information.y1 + rng.normal(
-            size=len(base_latent_information.y1), scale=y_scale
-        )
-
-        x2 = base_latent_information.x2 + rng.normal(
-            size=len(base_latent_information.x2), scale=x_scale
-        )
-        y2 = base_latent_information.y2 + rng.normal(
-            size=len(base_latent_information.y2), scale=y_scale
-        )
-        latent_information.append(LatentInformation(y0, x0, y1, x1, y2, x2))
+        latent_dict = {}
+        for xi in xis:
+            latent_dict[xi] = getattr(base_latent_information, xi) + rng.normal(
+                size=len(getattr(base_latent_information, xi)), scale=x_scale
+            )
+        for yi in yis:
+            latent_dict[yi] = getattr(base_latent_information, yi) + rng.normal(
+                size=len(getattr(base_latent_information, yi)), scale=y_scale
+            )
+        latent_information.append(LatentInformation(**latent_dict))
     return latent_information
 
 
