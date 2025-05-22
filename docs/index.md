@@ -3,6 +3,21 @@
 This is the documentation of `driftbench`, a framwork to synthetically generate process curves
 and to benchmark process drift detectors.
 
+Please consider citing if you use `driftbench` in your research:
+
+```text
+@article{wolf_method_2025,
+	title = {A method to benchmark high-dimensional process drift detection},
+	issn = {1572-8145},
+	url = {https://doi.org/10.1007/s10845-025-02590-9},
+	doi = {10.1007/s10845-025-02590-9},
+	journal = {Journal of Intelligent Manufacturing},
+	author = {Wolf, Edgar and Windisch, Tobias},
+	year = {2025},
+}
+```
+
+
 ## Getting started
 
 This is a minimal example to generate `N=10` curves from a cubic function:
