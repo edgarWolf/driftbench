@@ -1,0 +1,47 @@
+site_name: driftbench
+repo_url: https://github.com/edgarWolf/driftbench/
+repo_name: driftbench
+use_directory_urls: false
+
+theme:
+    name: material
+    highlightjs: true
+    color_mode: auto
+    hljs_languages:
+      - python
+    navigation_depth: 3
+    include_sidebar: true
+    features:
+      - navigation.expand
+      - navigation.instant
+      - navigation.instant.prefetch
+      - navigation.instant.preview
+
+plugins:
+    - mkdocstrings:
+        enable_inventory: true
+    - search
+    - mike:
+        canonical_version: latest
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - About: index.md
+  - Data generation: data.md
+  - Detectors: detectors.md
+  - Benchmarking: benchmarking.md
+  - How it works: how_it_works.md
+  - API: api.md
+

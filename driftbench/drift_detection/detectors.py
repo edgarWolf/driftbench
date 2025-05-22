@@ -183,8 +183,13 @@ class MMDDetector(Detector):
 
 
 class AggregateFeatureAlgorithm(Detector):
-    def __init__(self, agg_feature_func, algorithm):
+    """Detector that aggregates features over temporal axis.
+    """
+    def __init__(self, agg_feature_func=None, algorithm=None):
         self.algorithm = algorithm
+
+        if agg_feature_func is None:
+            agg_feature_func = np.mean
         self.agg_feature_func = agg_feature_func
 
     def predict(self, X):
