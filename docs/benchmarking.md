@@ -3,7 +3,6 @@
 
 # An example benchmark pipeline
 
-
 First, we set up a list of detectors we would like to benchmark:
 
 
