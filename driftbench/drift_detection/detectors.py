@@ -239,7 +239,7 @@ class AutoencoderDetector(Detector, nn.Module):
 
     Args:
         hidden_layers (list): List of number of neurons in each layer after input of encoder
-        retrain (bool): If true, model is always retrained when predict is called.
+        retrain_always (bool): If true, model is always retrained when predict is called.
     """
     _activation_functions = {
         "relu": nn.ReLU(),
