@@ -1,3 +1,5 @@
+"""The metrics module."""
+
 from abc import (
     ABCMeta,
     abstractmethod,
@@ -102,6 +104,7 @@ class OverlapScore(Metric):
 
 
 class TemporalAUC(Metric):
+    """The temporal area under the curve."""
     _supported_integration_rules = ["step", "trapez"]
 
     def __init__(self, rule="step"):
@@ -159,6 +162,7 @@ class SoftOverlapScore(Metric):
 
 
 class SoftTAUC(Metric):
+    """A softened version of the TAUC."""
     _supported_integration_rules = ["step", "trapez"]
 
     def __init__(self, rule="step"):
@@ -186,6 +190,7 @@ class SoftTAUC(Metric):
 
 
 class AUC(Metric):
+    """The area under the curve."""
 
     def __call__(self, prediction, target):
         prediction = np.nan_to_num(prediction, 0)

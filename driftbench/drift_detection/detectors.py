@@ -5,9 +5,6 @@ from abc import (
     ABCMeta,
     abstractmethod,
 )
-from driftbench.drift_detection.helpers import (
-    binarize_scores,
-)
 from driftbench.drift_detection.metrics import Metric
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
@@ -19,6 +16,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 
 class Detector(metaclass=ABCMeta):
+    """Detector base class."""
     hparams = []
 
     @abstractmethod
@@ -42,6 +40,7 @@ class Detector(metaclass=ABCMeta):
 
 
 class RandomGuessDetector(Detector):
+    """A random guess detector."""
     def __init__(self, random_seed=42):
         self.rng = np.random.RandomState(random_seed)
 
@@ -53,11 +52,15 @@ class RandomGuessDetector(Detector):
 
 
 class AlwaysGuessDriftDetector(Detector):
+    """A baseline detector."""
     def predict(self, X):
         return np.ones(X.shape[0])
 
 
 class RollingMeanDifferenceDetector(Detector):
+    """Calculates the maximum value over a rolling mean across time and returns the absolute
+    difference between subsequent steps."""
+
     hparams = ['window_size', 'center', 'fillna_strategy']
 
     def __init__(self, window_size, center=False, fillna_strategy=None):
@@ -75,6 +78,8 @@ class RollingMeanDifferenceDetector(Detector):
 
 
 class RollingMeanStandardDeviationDetector(Detector):
+    """Detector that applies a rolling mean followed by a rolling 
+    standard deviation and returns the result as the drift score."""
     def __init__(self, window_size, center=False, fillna_strategy=None):
         self.window_size = window_size
         self.center = center
@@ -91,6 +96,7 @@ class RollingMeanStandardDeviationDetector(Detector):
 
 
 class SlidingKSWINDetector(Detector):
+    """Detector based on KS-test."""
     def __init__(self, window_size, stat_size, offset):
         self.window_size = window_size
         self.stat_size = stat_size
@@ -183,8 +189,13 @@ class MMDDetector(Detector):
 
 
 class AggregateFeatureAlgorithm(Detector):
-    def __init__(self, agg_feature_func, algorithm):
+    """Detector that aggregates features over temporal axis.
+    """
+    def __init__(self, agg_feature_func=None, algorithm=None):
         self.algorithm = algorithm
+
+        if agg_feature_func is None:
+            agg_feature_func = np.mean
         self.agg_feature_func = agg_feature_func
 
     def predict(self, X):
@@ -197,6 +208,7 @@ class AggregateFeatureAlgorithm(Detector):
 
 
 class ClusterDetector(Detector):
+    """Cluster based drift detector."""
     supported_methods = ["kmeans", "gaussian mixture"]
 
     hparams = ['method', 'n_centers']
@@ -227,7 +239,7 @@ class AutoencoderDetector(Detector, nn.Module):
 
     Args:
         hidden_layers (list): List of number of neurons in each layer after input of encoder
-        retrain (bool): If true, model is always retrained when predict is called.
+        retrain_always (bool): If true, model is always retrained when predict is called.
     """
     _activation_functions = {
         "relu": nn.ReLU(),

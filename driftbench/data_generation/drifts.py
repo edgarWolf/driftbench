@@ -10,10 +10,10 @@ class Drift(metaclass=ABCMeta):
     def __init__(self, start, end, feature=None, dimension=0) -> None:
         """
         Args:
-            start: The start index.
-            end: The end index.
-            feature: The feature the drift should be applied on.
-            dimension: The dimension the drift should be applied on.
+            start (int): The start index.
+            end (int): The end index.
+            feature (str): The feature the drift should be applied on.
+            dimension (int): The dimension the drift should be applied on.
         """
         self._validate_drift_bounds(start, end)
         self.start = start
@@ -55,8 +55,7 @@ class DriftSequence:
         Args:
             X (list[LatentInformation]): The list of latent information the drifts are applied on.
 
-        Returns:
-            A list of drifted latent information according to the drift sequence.
+        Returns (list): A list of drifted latent information according to the drift sequence.
         """
         drifted = copy.deepcopy(X)
         for drift in self.drifts:
@@ -133,11 +132,11 @@ class LinearDrift(Drift):
     def __init__(self, start, end, m, feature=None, dimension=0):
         """
         Args:
-            start: The start index.
-            end: The end index.
-            m: The slope of the linear drift. Usually in the range (-1, 1)
-            feature: The feature the drift should be applied on.
-            dimension: The dimension the drift should be applied on.
+            start (int): The start index.
+            end (int): The end index.
+            m (float): The slope of the linear drift. Usually in the range (-1, 1)
+            feature (str): The feature the drift should be applied on.
+            dimension (int): The dimension the drift should be applied on.
         """
         super().__init__(start, end, feature=feature, dimension=dimension)
         self.m = m
