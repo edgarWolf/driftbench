@@ -1,7 +1,11 @@
-
-# Metrics
-
 # An example benchmark pipeline
+
+Here, we explain the ingredients for a benchmarking pipeline build with `driftbench`. Roughly
+speaking, the following is needed:
+
+ - A list of detectors from [`driftbench.drift_detection.detectors`][driftbench.drift_detection.detectors] as explained [here](detectors)
+ - One or more metrics from [`driftbench.drift_detection.metrics`][driftbench.drift_detection.metrics] as explained [here](metrics)
+ - A dataset specification as explained [data](./docs/data)
 
 First, we set up a list of detectors we would like to benchmark:
 

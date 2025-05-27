@@ -9,7 +9,7 @@ theme:
     color_mode: auto
     hljs_languages:
       - python
-    navigation_depth: 3
+    navigation_depth: 4
     include_sidebar: true
     features:
       - navigation.expand

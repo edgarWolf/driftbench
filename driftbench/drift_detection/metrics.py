@@ -1,3 +1,5 @@
+"""The metrics module."""
+
 from abc import (
     ABCMeta,
     abstractmethod,
