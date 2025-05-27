@@ -11,7 +11,7 @@ statistical and neural approaches. All detectors inherit from a common
 
  - [`SlidingKSWINDetector`][driftbench.drift_detection.detectors.SlidingKSWINDetector]:  Implements
    a sliding-window Kolmogorov–Smirnov test to compare distributions of past and recent data
-   windows. The size of the windows as well as the offset inbetween can be parametrized.
+   windows. The size of the windows as well as the offset in between can be parameterized.
  - [`MMDDetector`][driftbench.drift_detection.detectors.MMDDetector]: Applies the Maximum Mean
    Discrepancy (MMD) test to compare two samples using kernel methods (multiscale or RBF).
  - [`AggregateFeatureAlgorithm`][driftbench.drift_detection.detectors.AggregateFeatureAlgorithm]:
