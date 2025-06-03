@@ -59,11 +59,11 @@ information for each timestep defined as `start` as `end` within the `N` curves.
 defines the `feature` and the `dimension` as well as internal parameters, like in this case 
 the slope `m`.
 
-After setting up such an input, you can call the `sample_curves`-function, and retrieve the
+After setting up such a specification, you can call the `sample_curves`-function, and retrieve the
 coefficients, respective latent information and curve for each timestep.
 ```python
 coefficients, latent_information, curves = sample_curves(dataset["example"], measurement_scale=0.1)
 ```
-By specifying a value for `measurment_scale` some gaussian noise witht the specified scale is applied
+By specifying a value for `measurement_scale` some gaussian noise with the specified scale is applied
 on each value for every curve. By default, $5\%$ of the mean of the curves is used. If you want to
 omit the scale, set it to `0.0` explictly.
