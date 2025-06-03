@@ -49,7 +49,7 @@ If set to 0, no scale noise is applied.
 - `w_init`: The initial guess for the internal parameters. Must match the number of internal
 parameters defined in `func`.
 - `latent_information`: Contains a `LatentInformation` structure, which holds the latent information
-which defines the support points of the curves. The `x_i`denote the `x` information for the `i`-th
+which defines the support points of the curves. The `x_i`denote the `x`-information for the `i`-th
 derivative of `func`, while the `y_i`denote the `y`-information respectively.
 - `drifts`: Contains a `DriftSequence` structure, which in turn holds a list of drifts, for example
 `LinearDrift`-structures. These drifts are applied in the specified manner on the latent 
