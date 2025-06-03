@@ -6,6 +6,8 @@ and support points $x$ and $y$, we can solve for the internal parameters $w(t)$ 
 all the conditions given by the support points are satisfied. The schema is explained in
 the following section.
 
+![Example curve](./figures/example_curve.png)
+
 ## Synthetization 
 In the first step, we need to define latent information which encodes the shape of the curves
 to synthesize. This is done by formulating such a spec in a `yaml`-file.
@@ -57,3 +59,11 @@ information for each timestep defined as `start` as `end` within the `N` curves.
 defines the `feature` and the `dimension` as well as internal parameters, like in this case 
 the slope `m`.
 
+After setting up such an input, you can call the `sample_curves`-function, and retrieve the
+coefficients, respective latent information and curve for each timestep.
+```python
+coefficients, latent_information, curves = sample_curves(dataset["example"], measurement_scale=0.1)
+```
+By specifying a value for `measurment_scale` some gaussian noise witht the specified scale is applied
+on each value for every curve. By default, $5\%$ of the mean of the curves is used. If you want to
+omit the scale, set it to `0.0` explictly.
