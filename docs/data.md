@@ -66,4 +66,4 @@ coefficients, latent_information, curves = sample_curves(dataset["example"], mea
 ```
 By specifying a value for `measurement_scale` some gaussian noise with the specified scale is applied
 on each value for every curve. By default, $5\%$ of the mean of the curves is used. If you want to
-omit the scale, set it to `0.0` explictly.
+omit the scale, set it to `0.0` explicitly.
