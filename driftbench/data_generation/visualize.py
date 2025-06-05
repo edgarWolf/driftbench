@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_curve_with_latent_information(coefficients, p, latent_information, title=None, ax=None, y_lim=None):
+def plot_curve_with_latent_information(
+    coefficients, p, latent_information, title=None, ax=None, y_lim=None
+):
     """
     Plots the reconstructed wave with the given coefficients and a polynomial with the ground truth
     defined by the latent information.
@@ -29,20 +31,21 @@ def plot_curve_with_latent_information(coefficients, p, latent_information, titl
 
     # Plot the given x-values
     for xx in latent_information.x0:
-        ax.axvline(xx, linestyle='dashed', color='black')
+        ax.axvline(xx, linestyle="dashed", color="black")
 
     # Plot slope according to first derivative
     for slope, x_slope in zip(latent_information.y1, latent_information.x1):
-        xxs = [x for x in range(int(x_slope - 1), int(x_slope + 3.))]
+        xxs = [x for x in range(int(x_slope - 1), int(x_slope + 3.0))]
         dx_vals = np.array(
-            [(slope * x) - (slope * x_slope - p(coefficients, x_slope)) for x in xxs])
+            [(slope * x) - (slope * x_slope - p(coefficients, x_slope)) for x in xxs]
+        )
         ax.scatter(x_slope, p(coefficients, x_slope), alpha=0.4, color="green")
         ax.plot(xxs, dx_vals, c="green")
 
     # Plot curvature
     for x_curvature, curvature in zip(latent_information.x2, latent_information.y2):
         label = "convex" if curvature > 0.0 else "concave"
-        ax.axvline(x_curvature, linestyle='dashed', color='purple', label=label)
+        ax.axvline(x_curvature, linestyle="dashed", color="purple", label=label)
 
     # Mark the corresponding y-values
     for yy, xx in zip(latent_information.y0, latent_information.x0):
@@ -56,6 +59,17 @@ def plot_curve_with_latent_information(coefficients, p, latent_information, titl
 
 
 def plot_curves(curves, xs, title=None, cmap="coolwarm", ylim=None):
+    """
+    Plots curves with a given cmap, where the color mapping is applied over the temporal axis.
+    Args:
+        curves(np.ndarray): The curves array, of shape (N, m), where N curves consist of m
+        timesteps.
+        xs(list[float]): The x-values for the curve, must be of length m.
+        title (str): The title of the plot.
+        cmap (str): The colormap for the color mapping over the temporal axis.
+        ylim(list[float]): The y-limit for the plot.
+
+    """
     fig, ax = plt.subplots()
     cmap_obj = plt.get_cmap(name=cmap)
     cycler = plt.cycler("color", cmap_obj(np.linspace(0, 1, curves.shape[0])))
