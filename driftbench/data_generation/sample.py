@@ -27,6 +27,12 @@ def sample_curves(
         measurement_scale (float): The scale for the noise applied on the evaluated curves. If not
         set, 5% percent of the mean of the curves is used. Set to 0.0 if you want to omit
         this noise.
+    Returns:
+        tuple[np.ndarray, list[LatentInformation], np.ndarray): A tuple containing
+            - the coefficients `w` for each sampled curve.
+            - the latent information for each sampled curve.
+            - the evaluated sampled curves.
+
     """
     dimensions = dataset_specification["dimensions"]
     drifts = dataset_specification.get("drifts")
