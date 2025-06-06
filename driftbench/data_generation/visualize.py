@@ -61,6 +61,7 @@ def plot_curve_with_latent_information(
 def plot_curves(curves, xs, title=None, cmap="coolwarm", ylim=None):
     """
     Plots curves with a given cmap, where the color mapping is applied over the temporal axis.
+    
     Args:
         curves(np.ndarray): The curves array, of shape (N, m), where N curves consist of m
         timesteps.
