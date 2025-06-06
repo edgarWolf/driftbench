@@ -14,7 +14,7 @@ def sample_curves(
 ):
     """
     Samples synthetic curves given a dataset specification.
-    
+
     Args:
         dataset_specification (dict): A dataset specification which contains
         all information to syntethisize curves in yaml-format.
@@ -28,12 +28,13 @@ def sample_curves(
         measurement_scale (float): The scale for the noise applied on the evaluated curves. If not
         set, 5% percent of the mean of the curves is used. Set to 0.0 if you want to omit
         this noise.
-    Returns:
-        tuple[np.ndarray, list[LatentInformation], np.ndarray): A tuple containing
-            - the coefficients `w` for each sampled curve.
-            - the latent information for each sampled curve.
-            - the evaluated sampled curves.
 
+    Returns:
+        tuple[np.ndarray, list[LatentInformation], np.ndarray]: A tuple containing:
+            - coefficents (np.ndarray): The coefficients for each sampled curve.
+            - latent_information (list[LatentInformation]):
+                The latent information for each sampled curve.
+            - curves (np.ndarray): The evaluated sampled curves.
     """
     dimensions = dataset_specification["dimensions"]
     drifts = dataset_specification.get("drifts")

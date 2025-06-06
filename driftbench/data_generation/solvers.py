@@ -22,6 +22,7 @@ class Solver(metaclass=ABCMeta):
     def solve(self, X):
         """
         Solves an optimization problem defined by the solver.
+
         Args:
             X (list-like): Input to optimize according to solver instance.
 
