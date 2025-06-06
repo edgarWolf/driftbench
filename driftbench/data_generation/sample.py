@@ -14,6 +14,7 @@ def sample_curves(
 ):
     """
     Samples synthetic curves given a dataset specification.
+    
     Args:
         dataset_specification (dict): A dataset specification which contains
         all information to syntethisize curves in yaml-format.
