@@ -22,7 +22,7 @@ def sample_curves(
         The function `f` to fit and as well as initial guess `w0`can be provided as well.
         f (Callable): The function to fit the curves. Use this parameter if no function is specified
         in `dataset_specification`.
-        w0 (list[float]): The inital guess for the optimization problem used to synthesize curves.
+        w0 (np.ndarray): The inital guess for the optimization problem used to synthesize curves.
         Use this parameter if no initial guess is specified in `dataset_specification`.
         random_state (int): The random state for reproducablity.
         measurement_scale (float): The scale for the noise applied on the evaluated curves. If not
@@ -30,11 +30,9 @@ def sample_curves(
         this noise.
 
     Returns:
-        tuple[np.ndarray, list[LatentInformation], np.ndarray]: A tuple containing:
-            - coefficents (np.ndarray): The coefficients for each sampled curve.
-            - latent_information (list[LatentInformation]):
-                The latent information for each sampled curve.
-            - curves (np.ndarray): The evaluated sampled curves.
+        (np.ndarray): The coefficients for each sampled curve.
+        (list[LatentInformation]): The latent information for each sampled curve.
+        (np.ndarray): The evaluated sampled curves.
     """
     dimensions = dataset_specification["dimensions"]
     drifts = dataset_specification.get("drifts")
