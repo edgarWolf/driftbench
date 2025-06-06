@@ -12,10 +12,12 @@ from functools import partial
 
 jax.config.update("jax_enable_x64", True)
 
+
 class Solver(metaclass=ABCMeta):
     """
     Represents a backend for solving an optimization problem.
     """
+
     @abstractmethod
     def solve(self, X):
         """
@@ -24,7 +26,7 @@ class Solver(metaclass=ABCMeta):
             X (list-like): Input to optimize according to solver instance.
 
         Returns:
-
+            (np.ndarray|jnp.ndarray): The parameters obtained by solving the optimzation problem.
         """
         pass
 
@@ -33,10 +35,11 @@ class JaxCurveGenerationSolver(Solver):
     """
     Fits latent information according to a given polynomial.
     """
+
     def __init__(self, p, w0, max_fit_attemps, random_seed):
         """
         Args:
-            p (func): The polynomial.
+            p (Callable): The polynomial.
             w0 (list-like): The initial guess for the solution.
             max_fit_attemps (int): The maxmium number of attempts to refit a curve, if optimization didn't succeed.
             random_seed (int): The random seed for the random number generator.
@@ -55,12 +58,23 @@ class JaxCurveGenerationSolver(Solver):
         dp_dx2 = jit(vmap(partial(self.dp_dx2), in_axes=(None, 0)))
         solution = self.w0
         for i, latent in enumerate(X):
-            result = _minimize(p, dp_dx, dp_dx2, solution, latent.y0, latent.x0, latent.y1, latent.x1, latent.y2, latent.x2)
+            result = _minimize(
+                p,
+                dp_dx,
+                dp_dx2,
+                solution,
+                latent.y0,
+                latent.x0,
+                latent.y1,
+                latent.x1,
+                latent.y2,
+                latent.x2,
+            )
             if not result.success:
                 result = self._refit(p, dp_dx, dp_dx2, latent)
             solution = result.x
             if callback:
-                jax.debug.callback(callback,i, solution)
+                jax.debug.callback(callback, i, solution)
             coefficients.append(solution)
         return jnp.array(coefficients)
 
@@ -74,7 +88,18 @@ class JaxCurveGenerationSolver(Solver):
         # for the same problem as starting point until convergence.
         while not success and current_fit_attempts < self.max_fit_attempts:
             current_fit_attempts += 1
-            result = _minimize(p, dp_dx, dp_dx2, solution, latent.y0, latent.x0, latent.y1, latent.x1, latent.y2, latent.x2)
+            result = _minimize(
+                p,
+                dp_dx,
+                dp_dx2,
+                solution,
+                latent.y0,
+                latent.x0,
+                latent.y1,
+                latent.x1,
+                latent.y2,
+                latent.x2,
+            )
             solution = result.x
             success = result.success
         return result
@@ -86,7 +111,17 @@ def _minimize(p, dp_dx, dp_dx2, w, y0, x0, y1, x1, y2, x2):
         _solve,
         w,
         method="BFGS",
-        args=(p, dp_dx, dp_dx2, jnp.array(y0), jnp.array(x0), jnp.array(y1), jnp.array(x1), jnp.array(y2), jnp.array(x2))
+        args=(
+            p,
+            dp_dx,
+            dp_dx2,
+            jnp.array(y0),
+            jnp.array(x0),
+            jnp.array(y1),
+            jnp.array(x1),
+            jnp.array(y2),
+            jnp.array(x2),
+        ),
     )
 
 
@@ -100,4 +135,6 @@ def _solve(w, p, dp_dx, dp_dx2, y0, x0, y1, x1, y2, x2):
 
 @jit
 def _loss(y0, y1, y2, px, dp_px, dp_px2):
-    return ((px - y0) ** 2).sum() + ((dp_px - y1) ** 2).sum() + ((dp_px2 - y2) ** 2).sum()
+    return (
+        ((px - y0) ** 2).sum() + ((dp_px - y1) ** 2).sum() + ((dp_px2 - y2) ** 2).sum()
+    )

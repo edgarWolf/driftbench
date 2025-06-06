@@ -15,7 +15,7 @@ def plot_curve_with_latent_information(
         the ground truth for the polynomial and it's coefficients
         title (str): The title for the plot.
         ax (matplotlib.axes).: Extern axes if this function is used for external created figure.
-        y_lim (tuple(int, int): The y-lim for the plot.
+        y_lim (tuple[float, float]): The y-lim for the plot.
 
     Returns:
 
@@ -61,14 +61,14 @@ def plot_curve_with_latent_information(
 def plot_curves(curves, xs, title=None, cmap="coolwarm", ylim=None):
     """
     Plots curves with a given cmap, where the color mapping is applied over the temporal axis.
-    
+
     Args:
         curves(np.ndarray): The curves array, of shape (N, m), where N curves consist of m
         timesteps.
         xs(list[float]): The x-values for the curve, must be of length m.
         title (str): The title of the plot.
         cmap (str): The colormap for the color mapping over the temporal axis.
-        ylim(list[float]): The y-limit for the plot.
+        ylim(tuple[float, float]): The y-limit for the plot.
 
     """
     fig, ax = plt.subplots()

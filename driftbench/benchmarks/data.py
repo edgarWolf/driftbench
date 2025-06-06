@@ -15,7 +15,7 @@ class Dataset:
             name (str): The name of the dataset specification.
             spec (dict): The yaml-specification of the dataset.
             f (Callable): The function to fit the curves.
-            w0 (list[float]): The inital guess.
+            w0 (np.ndarray): The inital value for the internal parameters.
             n_variations (int): The number of variations each dataset is sampled.
             Each dataset is sampled as many times as `n_variations` is set, each time with a
             different random seed.
