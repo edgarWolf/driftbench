@@ -12,6 +12,28 @@ def sample_curves(
     measurement_scale=None,
     callback=None,
 ):
+    """
+    Samples synthetic curves given a dataset specification.
+
+    Args:
+        dataset_specification (dict): A dataset specification which contains
+        all information to syntethisize curves in yaml-format.
+        Each dataset is encoded with a name and needs a latent information provided.
+        The function `f` to fit and as well as initial guess `w0`can be provided as well.
+        f (Callable): The function to fit the curves. Use this parameter if no function is specified
+        in `dataset_specification`.
+        w0 (np.ndarray): The inital guess for the optimization problem used to synthesize curves.
+        Use this parameter if no initial guess is specified in `dataset_specification`.
+        random_state (int): The random state for reproducablity.
+        measurement_scale (float): The scale for the noise applied on the evaluated curves. If not
+        set, 5% percent of the mean of the curves is used. Set to 0.0 if you want to omit
+        this noise.
+
+    Returns:
+        (np.ndarray): The coefficients for each sampled curve.
+        (list[LatentInformation]): The latent information for each sampled curve.
+        (np.ndarray): The evaluated sampled curves.
+    """
     dimensions = dataset_specification["dimensions"]
     drifts = dataset_specification.get("drifts")
     x_scale = dataset_specification.get("x_scale", 0.02)
