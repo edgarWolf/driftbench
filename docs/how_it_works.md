@@ -29,7 +29,7 @@ inital internal parameters $w_0(t)$.
 - Provide problem constraints encoded in
 [`LatentInformation`][driftbench.data_generation.latent_information.LatentInformation]
 objects.
-- Compute the $i$ partial derivates of $f(w(t), x)$ with respect to $x$.
+- Compute the partial derivates of $f(w(t), x)$ with respect to $x_i$.
 - For each latent information object, compute $w(t)$ according to the LBFGS-algorithm.
 - Return all computed solutions $w(t)$ for each curve.
 
