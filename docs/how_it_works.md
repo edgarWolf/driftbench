@@ -6,7 +6,7 @@ This package uses [JAX](JAX (https://github.com/jax-ml/jax) as its backend for g
 In particular, `jax` is used for:
 
 - Solving non-linear optimization problems.
-- Automatic differentiation for calculating partial derivates of `f`.
+- Automatic differentiation for calculating partial derivates of arbitrary functions.
 - Just-in-time (JIT)-compilation with XLA for performance optimization.
 
 For more detailed information regarding the XLA-compilation, please see the 
