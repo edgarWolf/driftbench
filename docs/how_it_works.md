@@ -2,7 +2,7 @@
 
 
 # Technical implementation in `jax`
-This package uses `jax` as its backend for generating synthetic curves.
+This package uses [JAX](JAX (https://github.com/jax-ml/jax) as its backend for generating synthetic curves.
 In particular, `jax` is used for:
 
 - Solving non-linear optimization problems.
