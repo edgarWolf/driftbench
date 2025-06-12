@@ -10,7 +10,7 @@ In particular, `jax` is used for:
 - Just-in-time (JIT)-compilation with XLA for performance optimization.
 
 For more detailed information regarding the XLA-compilation, please see the 
-[offical `jax` documenation](https://docs.jax.dev/en/latest/index.html)
+[offical JAX documentation](https://docs.jax.dev/en/latest/index.html)
 or [XLA-documentation](https://openxla.org/xla/tf2xla?hl=en).
 
 These three points ensure an efficient generation of curves, while being
