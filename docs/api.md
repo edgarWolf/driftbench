@@ -3,6 +3,7 @@
 ::: driftbench.data_generation.sample
 ::: driftbench.data_generation.drifts
 ::: driftbench.data_generation.solvers
+::: driftbench.data_generation.latent_information
 
 # Drift detection
 

@@ -19,8 +19,8 @@ class LatentInformation:
         y2 (list-like): The y-values of the derivative of a function.
         x2 (list-like): The x-values of the second derivative of a function.
         Hence, no duplicates are allowed.
-
     """
+
     y0: np.ndarray
     x0: np.ndarray
     y1: np.ndarray
@@ -35,11 +35,17 @@ class LatentInformation:
 
     def _validate_matching_shapes(self):
         if self.y0.shape != self.x0.shape:
-            raise ValueError("Features y0 and x0 are not allowed to have different shape")
+            raise ValueError(
+                "Features y0 and x0 are not allowed to have different shape"
+            )
         if self.y1.shape != self.x1.shape:
-            raise ValueError("Features y1 and x1 are not allowed to have different shape")
+            raise ValueError(
+                "Features y1 and x1 are not allowed to have different shape"
+            )
         if self.y2.shape != self.x2.shape:
-            raise ValueError("Features y2 and x2 are not allowed to have different shape")
+            raise ValueError(
+                "Features y2 and x2 are not allowed to have different shape"
+            )
 
     def _validate_1d_array(self):
 
