@@ -27,7 +27,7 @@ The procedure can be described as follows:
 - Choose a function $f(w(t), x)$, which describes the shape of the curves to generate with 
 inital internal parameters $w_0(t)$.
 - Provide problem constraints encoded in
-[`driftbench.data_generation.latent_information.LatentInformation`][driftbench.data_generation.latent_information.LatentInformation]
+[`LatentInformation`][driftbench.data_generation.latent_information.LatentInformation]
 objects.
 - Compute the $i$ partial derivates of $f(w(t), x)$ with respect to $x$.
 - For each latent information object, compute $w(t)$ according to the LBFGS-algorithm.
