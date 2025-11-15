@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-import numpy as np
 import jax
 import jax.numpy as jnp
 from jax import (
@@ -34,35 +33,34 @@ class Solver(metaclass=ABCMeta):
 
 class JaxCurveGenerationSolver(Solver):
     """
-    Fits latent information according to a given polynomial.
+    Fits latent information according to a given function.
     """
 
-    def __init__(self, p, w0, max_fit_attemps, random_seed):
+    def __init__(self, f, w0, max_fit_attemps):
         """
         Args:
-            p (Callable): The polynomial.
+            f (Callable): The function.
             w0 (list-like): The initial guess for the solution.
             max_fit_attemps (int): The maxmium number of attempts to refit a curve, if optimization didn't succeed.
             random_seed (int): The random seed for the random number generator.
         """
-        self.p = p
-        self.dp_dx = grad(p, argnums=1)
-        self.dp_dx2 = grad(self.dp_dx, argnums=1)
+        self.f = f
+        self.df_dx = grad(f, argnums=1)
+        self.df_dx2 = grad(self.df_dx, argnums=1)
         self.w0 = jnp.array(w0)
         self.max_fit_attempts = max_fit_attemps
-        self.rng = np.random.RandomState(random_seed)
 
     def solve(self, X, callback=None):
         coefficients = []
-        p = jit(vmap(partial(self.p), in_axes=(None, 0)))
-        dp_dx = jit(vmap(partial(self.dp_dx), in_axes=(None, 0)))
-        dp_dx2 = jit(vmap(partial(self.dp_dx2), in_axes=(None, 0)))
+        f = jit(vmap(partial(self.f), in_axes=(None, 0)))
+        df_dx = jit(vmap(partial(self.df_dx), in_axes=(None, 0)))
+        df_dx2 = jit(vmap(partial(self.df_dx2), in_axes=(None, 0)))
         solution = self.w0
         for i, latent in enumerate(X):
             result = _minimize(
-                p,
-                dp_dx,
-                dp_dx2,
+                f,
+                df_dx,
+                df_dx2,
                 solution,
                 latent.y0,
                 latent.x0,
@@ -72,7 +70,7 @@ class JaxCurveGenerationSolver(Solver):
                 latent.x2,
             )
             if not result.success:
-                result = self._refit(p, dp_dx, dp_dx2, latent)
+                result = self._refit(f, df_dx, df_dx2, latent)
             solution = result.x
             if callback:
                 jax.debug.callback(callback, i, solution)
