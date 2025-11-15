@@ -44,23 +44,22 @@ class JaxCurveGenerationSolver(Solver):
             max_fit_attemps (int): The maxmium number of attempts to refit a curve, if optimization didn't succeed.
             random_seed (int): The random seed for the random number generator.
         """
-        self.f = f
-        self.df_dx = grad(f, argnums=1)
-        self.df_dx2 = grad(self.df_dx, argnums=1)
+        self.f = jit(vmap(partial(f), in_axes=(None, 0)))
+        df_dx = grad(f, argnums=1)
+        df_dx2 = grad(df_dx, argnums=1)
+        self.df_dx = jit(vmap(partial(df_dx), in_axes=(None, 0)))
+        self.df_dx2 = jit(vmap(partial(df_dx2), in_axes=(None, 0)))
         self.w0 = jnp.array(w0)
         self.max_fit_attempts = max_fit_attemps
 
     def solve(self, X, callback=None):
         coefficients = []
-        f = jit(vmap(partial(self.f), in_axes=(None, 0)))
-        df_dx = jit(vmap(partial(self.df_dx), in_axes=(None, 0)))
-        df_dx2 = jit(vmap(partial(self.df_dx2), in_axes=(None, 0)))
         solution = self.w0
         for i, latent in enumerate(X):
             result = _minimize(
-                f,
-                df_dx,
-                df_dx2,
+                self.f,
+                self.df_dx,
+                self.df_dx2,
                 solution,
                 latent.y0,
                 latent.x0,
@@ -70,7 +69,7 @@ class JaxCurveGenerationSolver(Solver):
                 latent.x2,
             )
             if not result.success:
-                result = self._refit(f, df_dx, df_dx2, latent)
+                result = self._refit(self.f, self.df_dx, self.df_dx2, latent)
             solution = result.x
             if callback:
                 jax.debug.callback(callback, i, solution)
