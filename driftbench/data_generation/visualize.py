@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def plot_curve_with_latent_information(
-    coefficients, p, latent_information, title=None, ax=None, y_lim=None
+    coefficients, f, latent_information, title=None, ax=None, y_lim=None
 ):
     """
     Plots the reconstructed wave with the given coefficients and a polynomial with the ground truth
@@ -27,7 +27,7 @@ def plot_curve_with_latent_information(
     if not ax:
         fig, ax = plt.subplots()
 
-    ax.plot(x, p(coefficients, x))
+    ax.plot(x, f(coefficients, x))
 
     # Plot the given x-values
     for xx in latent_information.x0:
@@ -37,9 +37,9 @@ def plot_curve_with_latent_information(
     for slope, x_slope in zip(latent_information.y1, latent_information.x1):
         xxs = [x for x in range(int(x_slope - 1), int(x_slope + 3.0))]
         dx_vals = np.array(
-            [(slope * x) - (slope * x_slope - p(coefficients, x_slope)) for x in xxs]
+            [(slope * x) - (slope * x_slope - f(coefficients, x_slope)) for x in xxs]
         )
-        ax.scatter(x_slope, p(coefficients, x_slope), alpha=0.4, color="green")
+        ax.scatter(x_slope, f(coefficients, x_slope), alpha=0.4, color="green")
         ax.plot(xxs, dx_vals, c="green")
 
     # Plot curvature
@@ -58,20 +58,22 @@ def plot_curve_with_latent_information(
         ax.set_title(title)
 
 
-def plot_curves(curves, xs, title=None, cmap="coolwarm", ylim=None):
+def plot_curves(xs, curves, title=None, cmap="coolwarm", ax=None, ylim=None):
     """
     Plots curves with a given cmap, where the color mapping is applied over the temporal axis.
 
     Args:
+        xs(list[float]): The x-values for the curve, must be of length m.
         curves(np.ndarray): The curves array, of shape (N, m), where N curves consist of m
         timesteps.
-        xs(list[float]): The x-values for the curve, must be of length m.
         title (str): The title of the plot.
         cmap (str): The colormap for the color mapping over the temporal axis.
+        ax (matplotlib.axes).: Extern axes if this function is used for external created figure.
         ylim(tuple[float, float]): The y-limit for the plot.
 
     """
-    fig, ax = plt.subplots()
+    if ax is None:
+        fig, ax = plt.subplots()
     cmap_obj = plt.get_cmap(name=cmap)
     cycler = plt.cycler("color", cmap_obj(np.linspace(0, 1, curves.shape[0])))
     ax.set_prop_cycle(cycler)
