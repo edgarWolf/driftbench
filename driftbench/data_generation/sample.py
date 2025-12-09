@@ -18,14 +18,15 @@ def sample_curves(
 
     Args:
         dataset_specification (dict): A dataset specification which contains
-        all information to syntethisize curves in yaml-format.
+        all information to synthesize curves in yaml-format.
         Each dataset is encoded with a name and needs a latent information provided.
         The function `f` to fit and as well as initial guess `w0`can be provided as well.
         f (Callable): The function to fit the curves. Use this parameter if no function is specified
         in `dataset_specification`.
-        w0 (np.ndarray): The inital guess for the optimization problem used to synthesize curves.
+        w0 (np.ndarray): The initial guess for the optimization problem used to synthesize curves.
         Use this parameter if no initial guess is specified in `dataset_specification`.
-        random_state (int): The random state for reproducablity.
+        random_state (int): The random state for reproducibility.
+        vectorize (bool): Whether to vectorize the optimization over multiple latent information instances.
         measurement_scale (float): The scale for the noise applied on the evaluated curves. If not
         set, 5% percent of the mean of the curves is used. Set to 0.0 if you want to omit
         this noise.
