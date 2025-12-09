@@ -67,3 +67,79 @@ coefficients, latent_information, curves = sample_curves(dataset["example"], mea
 By specifying a value for `measurement_scale` some gaussian noise with the specified scale is applied
 on each value for every curve. By default, $5\%$ of the mean of the curves is used. If you want to
 omit the scale, set it to `0.0` explicitly.
+
+## Vectorized Curve Generation
+
+The curve generation process can be significantly accelerated by using vectorized computation. 
+By default, `driftbench` uses JAX's `vmap` (vectorized map) to parallelize the optimization 
+across all latent information instances simultaneously, resulting in much faster curve generation 
+compared to sequential computation.
+
+### Performance Comparison
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| **Vectorized** (default) | Optimizes all curves in parallel using `vmap` and `jit` | Large datasets, production use |
+| **Sequential** | Optimizes curves one-by-one, using previous solution as starting point | Debugging, progress tracking, improved stability |
+
+The vectorized mode is typically **orders of magnitude faster** for large datasets because:
+
+1. JAX compiles the optimization function only once for all instances
+2. Operations are batched and executed in parallel on the hardware (CPU/GPU)
+3. Memory access patterns are optimized for vectorized operations
+
+However, sequential mode can provide **more stable results** because it uses the solution 
+from the previous curve as the starting point for the next optimization. This warm-starting 
+approach can lead to smoother transitions across the execution dimension, especially when 
+curves are expected to have similar coefficients.
+
+### Using Vectorized Mode
+
+Vectorized computation is enabled by default when using `sample_curves`:
+
+```python
+from driftbench.data_generation.sample import sample_curves
+
+# Vectorized mode is used by default - fast computation
+coefficients, latent_information, curves = sample_curves(dataset["example"])
+
+# Explicitly enable vectorized mode
+coefficients, latent_information, curves = sample_curves(dataset["example"], vectorize=True)
+```
+
+### Using Sequential Mode
+
+To use sequential mode with better stability, set `vectorize=False` in `sample_curves`:
+
+```python
+from driftbench.data_generation.sample import sample_curves
+
+# Sequential mode - slower but more stable results
+coefficients, latent_information, curves = sample_curves(dataset["example"], vectorize=False)
+
+# With a callback to track progress
+def progress_callback(i, solution):
+    print(f"Curve {i}: coefficients = {solution}")
+
+coefficients, latent_information, curves = sample_curves(
+    dataset["example"], 
+    vectorize=False, 
+    callback=progress_callback
+)
+```
+
+!!! note
+    The `callback` parameter is only supported in sequential mode (`vectorize=False`). 
+    When using vectorized mode, the callback is ignored since all curves are computed 
+    simultaneously.
+
+### When to Use Each Mode
+
+- **Vectorized mode** (default): Use this for production workloads and when generating 
+  large numbers of curves where speed is the priority.
+  
+- **Sequential mode**: Use this when you need to:
+    - Achieve more stable optimization results with smooth coefficient transitions
+    - Debug the optimization process
+    - Monitor progress with a callback function
+    - Investigate individual curve fitting issues
