@@ -10,6 +10,7 @@ def sample_curves(
     w0=None,
     random_state=2024,
     measurement_scale=None,
+    vectorize=True,
     callback=None,
 ):
     """
@@ -46,7 +47,7 @@ def sample_curves(
     )
     if drifts is not None:
         latent_information = drifts.apply(latent_information)
-    data_generator = CurveGenerator(func, w_init)
+    data_generator = CurveGenerator(func, w_init, vectorize=vectorize)
     w = data_generator.run(latent_information, callback=callback)
     x_range = np.concatenate(
         (
