@@ -59,7 +59,7 @@ class JaxCurveGenerationSolver(Solver):
             self.min_func = jit(
                 vmap(
                     partial(_minimize),
-                    in_axes=(None, None, None, None, 0, 0, 0, 0, 0, 0),
+                    in_axes=(None, None, None, 0, 0, 0, 0, 0, 0, 0),
                 ),
                 static_argnums=(0, 1, 2),
             )
@@ -98,7 +98,7 @@ class JaxCurveGenerationSolver(Solver):
         return jnp.array(coefficients)
 
     def _solve_vectorized(self, X):
-        solution = self.w0
+        solution = jnp.tile(self.w0, (len(X), 1))
         l_x0_mat, l_x1_mat, l_x2_mat, l_y0_mat, l_y1_mat, l_y2_mat = (
             self._latents_to_array(X)
         )
