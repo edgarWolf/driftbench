@@ -18,9 +18,22 @@ class TestJaxCurveGenerationSolver(unittest.TestCase):
         y2 = np.array([12.0])
         self.latent_information = LatentInformation(y0, x0, y1, x1, y2, x2)
 
-    def test_solve(self):
+    def test_solve_vectorized(self):
         w0 = jnp.zeros(4)
-        solver = JaxCurveGenerationSolver(self.p, w0, max_fit_attemps=10)
+        solver = JaxCurveGenerationSolver(
+            self.p, w0, max_fit_attemps=10, vectorize=True
+        )
+        coefficients = solver.solve([self.latent_information])
+        expected = np.array([[1.0, 0.0, 0.0, 0.0]])
+        self.assertIs(type(coefficients), jaxlib.ArrayImpl)
+        self.assertTupleEqual(coefficients.shape, (1, 4))
+        self.assertTrue(np.allclose(expected, coefficients))
+
+    def test_solve_sequentially(self):
+        w0 = jnp.zeros(4)
+        solver = JaxCurveGenerationSolver(
+            self.p, w0, max_fit_attemps=10, vectorize=False
+        )
         coefficients = solver.solve([self.latent_information])
         expected = np.array([[1.0, 0.0, 0.0, 0.0]])
         self.assertIs(type(coefficients), jaxlib.ArrayImpl)

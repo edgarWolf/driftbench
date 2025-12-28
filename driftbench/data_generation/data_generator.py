@@ -27,14 +27,17 @@ class CurveGenerator(DataGenerator):
     which meet the constraints provided by the latent information.
     """
 
-    def __init__(self, p, w0, max_fit_attempts=100):
+    def __init__(self, p, w0, max_fit_attempts=100, vectorize=True):
         """
         Args:
             p (func): The polynomial to fit.
             w0 (list-like): The initial guess.
             max_fit_attemps (int): The maxmium number of attempts to refit a curve, if optimization didn't succeed.
+            vectorize (bool): Whether to vectorize the optimization over multiple latent information instances.
         """
-        self.solver = JaxCurveGenerationSolver(p, w0, max_fit_attempts)
+        self.solver = JaxCurveGenerationSolver(
+            p, w0, max_fit_attempts, vectorize=vectorize
+        )
 
     def run(self, X, callback=None):
         return self.solver.solve(X, callback=callback)
